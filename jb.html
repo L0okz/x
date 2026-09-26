@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>MANSOOR0X // JB</title>
+<style>
+:root{--bg:#07090d;--panel:#0d1118;--line:#202936;--text:#e8edf4;--muted:#788597;--blue:#58a6ff}
+*{box-sizing:border-box}body{margin:0;min-height:100vh;background:
+radial-gradient(circle at 50% 0,#172337 0,transparent 42%),var(--bg);
+color:var(--text);font:14px/1.5 ui-monospace,SFMono-Regular,Consolas,monospace}
+main{width:min(860px,92%);margin:0 auto;padding:28px 0}
+nav{display:flex;justify-content:space-between;gap:15px;color:#667486;font-size:12px}
+nav a{color:var(--blue);text-decoration:none}
+.card{margin-top:45px;background:#0d121aee;border:1px solid var(--line);border-radius:22px;padding:34px;text-align:center;box-shadow:0 25px 80px #0009}
+.logo{font-size:29px;font-weight:900;letter-spacing:.15em}.tag{color:var(--muted);margin:8px 0 25px}
+.ring{width:90px;height:90px;margin:0 auto 22px;border:2px solid #273548;border-radius:50%;display:grid;place-items:center}
+.ring span{width:30px;height:30px;border-radius:50%;background:#26384d;box-shadow:0 0 25px #345}
+button{width:min(360px,100%);padding:15px;border-radius:12px;border:1px solid #315174;background:#101d2c;color:#fff;font:800 14px monospace;cursor:pointer}
+button:hover{background:#142942;border-color:var(--blue)}
+button:disabled{opacity:.45;cursor:not-allowed}
+#state{margin-top:18px;color:#8795a7;min-height:22px}.log{margin-top:25px;text-align:left;background:#080b10;border:1px solid #1d2632;border-radius:12px;padding:16px;white-space:pre-wrap;min-height:80px;color:#9ba8b7}
+footer{text-align:center;color:#596575;margin-top:22px;font-size:11px}
+</style>
+</head>
+<body>
+<main>
+<nav><a href="index.html">← HOME</a><a href="linux.html">🐧 LINUX</a></nav>
+<section class="card">
+  <div class="logo">MANSOOR0X</div>
+  <div class="tag">JB CONTROL PANEL · MANUAL MODE</div>
+  <div class="ring"><span></span></div>
+  <button id="run" type="button">▶ RUN JB</button>
+  <div id="state">Ready — press RUN JB when you want to start.</div>
+  <div id="out" class="log">No execution started.</div>
+</section>
+<footer>© 2026 mansoor0x · existing exploit files unchanged</footer>
+</main>
+<script>
+const run=document.getElementById("run"), state=document.getElementById("state"), out=document.getElementById("out");
+run.addEventListener("click",()=>{
+  run.disabled=true;
+  state.textContent="Starting…";
+  out.textContent="Loading existing JB module…";
+  const s=document.createElement("script");
+  s.type="module";
+  s.src="./jb.js?v=10";
+  document.body.appendChild(s);
+});
+</script>
+</body>
+</html>

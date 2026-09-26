@@ -1,0 +1,382 @@
+<!-- © 2026 mansoor0x — PS4 Linux Loader -->
+<html manifest="cache.appcache">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>MANSOOR0X // PS4 LINUX</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            background: #0a0e1a;
+            color: #c8d8f0;
+            font: 14px/1.6 "Courier New", Courier, monospace;
+            min-height: 100vh;
+        }
+
+        /* ── top bar ── */
+        #topbar {
+            background: #050810;
+            border-bottom: 1px solid #1a2a44;
+            padding: 14px 24px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        #topbar .brand { color: #fff; font-size: 13px; letter-spacing: .05em; }
+        #topbar .brand b { color: #3b82f6; }
+        #topbar .ver { color: #3a5070; font-size: 11px; }
+
+        /* ── main layout ── */
+        #wrap { padding: 28px 24px; max-width: 860px; }
+
+        /* ── Tux ASCII ── */
+        #tux {
+            color: #3b82f6;
+            font-size: 11px;
+            line-height: 1.3;
+            white-space: pre;
+            margin-bottom: 28px;
+            display: inline-block;
+        }
+        #tux-wrap {
+            display: flex;
+            align-items: flex-start;
+            gap: 28px;
+            margin-bottom: 32px;
+        }
+        #tux-info {
+            padding-top: 4px;
+        }
+        #tux-info .title {
+            font-size: 22px;
+            font-weight: 400;
+            color: #fff;
+            letter-spacing: -.01em;
+            margin-bottom: 6px;
+        }
+        #tux-info .sub {
+            color: #3a5070;
+            font-size: 12px;
+            line-height: 2;
+        }
+        #tux-info .sub b { color: #3b82f6; }
+
+        /* ── separator ── */
+        .sep {
+            border: none;
+            border-top: 1px solid #1a2a44;
+            margin: 20px 0;
+        }
+
+        /* ── section labels ── */
+        .sec-label {
+            font-size: 10px;
+            letter-spacing: .25em;
+            text-transform: uppercase;
+            color: #3a5070;
+            margin-bottom: 14px;
+        }
+
+        /* ── RAM selector ── */
+        #ram-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+            gap: 8px;
+            margin-bottom: 28px;
+        }
+        .ram-btn {
+            background: #080c18;
+            border: 1px solid #1a2a44;
+            color: #c8d8f0;
+            font: 13px/1 "Courier New", Courier, monospace;
+            padding: 12px 10px;
+            cursor: pointer;
+            text-align: left;
+            transition: border-color .15s, background .15s;
+        }
+        .ram-btn:hover  { border-color: #3b82f6; background: #0d1528; }
+        .ram-btn.sel    { border-color: #3b82f6; background: #0f1e3a; color: #fff; }
+        .ram-btn .sz    { font-size: 16px; color: #fff; display: block; margin-bottom: 3px; }
+        .ram-btn .hint  { font-size: 10px; color: #3a5070; }
+        .ram-btn.sel .hint { color: #3b82f6; }
+
+        /* ── launch button ── */
+        #launch-wrap { margin-bottom: 24px; }
+        #launch {
+            background: #1d4ed8;
+            color: #fff;
+            border: none;
+            font: 600 14px/1 "Courier New", Courier, monospace;
+            padding: 16px 32px;
+            cursor: pointer;
+            letter-spacing: .05em;
+            text-transform: uppercase;
+            transition: background .15s;
+            width: 100%;
+            max-width: 360px;
+        }
+        #launch:hover { background: #2563eb; }
+        #launch:disabled { background: #1a2a44; color: #3a5070; cursor: not-allowed; }
+
+        /* ── console log ── */
+        #console {
+            white-space: pre-wrap;
+            font-size: 12px;
+            line-height: 1.8;
+            color: #3a5070;
+            min-height: 40px;
+        }
+        .ok   { color: #22c55e; }
+        .bad  { color: #ef4444; }
+        .warn { color: #f59e0b; }
+        .blu  { color: #3b82f6; }
+
+        /* ── info table ── */
+        #info-table { margin-bottom: 24px; }
+        .irow {
+            display: flex;
+            gap: 12px;
+            padding: 7px 0;
+            border-bottom: 1px solid #0d1528;
+            font-size: 12px;
+        }
+        .ik { color: #3a5070; width: 100px; flex-shrink: 0; }
+        .iv { color: #c8d8f0; }
+        .iv.ok { color: #22c55e; }
+        .iv.bad{ color: #ef4444; }
+
+        /* ── footer ── */
+        #foot {
+            margin-top: 40px;
+            padding-top: 16px;
+            border-top: 1px solid #0d1528;
+            font-size: 11px;
+            color: #1e2d42;
+        }
+        #foot b { color: #3a5070; }
+    </style>
+</head>
+<body>
+<div style="max-width:920px;margin:14px auto 0;padding:0 18px;font:12px monospace;color:#718096">
+<a href="index.html" style="color:#58a6ff;text-decoration:none">← HOME</a>
+<span style="float:right">MANUAL MODE</span>
+</div>
+
+<!-- top bar -->
+<div id="topbar">
+    <span class="brand"><b>mansoor0x</b> · PS4 Linux Loader</span>
+    <span class="ver">PS4-Linux-Loader v25 · bin edition</span>
+</div>
+
+<div id="wrap">
+
+    <!-- Tux + info -->
+    <div id="tux-wrap">
+        <pre id="tux">   .---.
+  /     \
+ | () () |
+  \  ^  /
+   |||||
+   |||||
+  _|||||_
+ (       )
+  \     /
+   '---'</pre>
+        <div id="tux-info">
+            <div class="title">PS4 Linux</div>
+            <div class="sub">
+                platform&nbsp;&nbsp;&nbsp; <b>PlayStation 4</b><br>
+                firmware&nbsp;&nbsp;&nbsp; <b id="fw-val">detecting…</b><br>
+                loader&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <b>PS4-Linux-Loader v25</b><br>
+                author&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <b>mansoor0x</b><br>
+                method&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <b>WebKit userland → kexec</b>
+            </div>
+        </div>
+    </div>
+
+    <!-- info rows -->
+    <div id="info-table">
+        <div class="irow"><span class="ik">firmware</span><span class="iv" id="i-fw">—</span></div>
+        <div class="irow"><span class="ik">exploit</span><span class="iv ok">polpNO · 13.52</span></div>
+        <div class="irow"><span class="ik">payload</span><span class="iv" id="i-pay">none selected</span></div>
+        <div class="irow"><span class="ik">status</span><span class="iv" id="i-st">idle</span></div>
+    </div>
+
+    <hr class="sep">
+
+    <!-- RAM selector -->
+    <div class="sec-label">select ram allocation</div>
+    <div id="ram-grid">
+        <button class="ram-btn" data-file="linux/linux-32mb.bin"  onclick="selectRam(this)">
+            <span class="sz">32 MB</span>
+            <span class="hint">minimal test</span>
+        </button>
+        <button class="ram-btn" data-file="linux/linux-64mb.bin"  onclick="selectRam(this)">
+            <span class="sz">64 MB</span>
+            <span class="hint">very light</span>
+        </button>
+        <button class="ram-btn" data-file="linux/linux-128mb.bin" onclick="selectRam(this)">
+            <span class="sz">128 MB</span>
+            <span class="hint">light distros</span>
+        </button>
+        <button class="ram-btn" data-file="linux/linux-256mb.bin" onclick="selectRam(this)">
+            <span class="sz">256 MB</span>
+            <span class="hint">recommended min</span>
+        </button>
+        <button class="ram-btn" data-file="linux/linux-512mb.bin" onclick="selectRam(this)">
+            <span class="sz">512 MB</span>
+            <span class="hint">general use</span>
+        </button>
+        <button class="ram-btn" data-file="linux/linux-1024mb.bin" onclick="selectRam(this)">
+            <span class="sz">1024 MB</span>
+            <span class="hint">desktop env</span>
+        </button>
+        <button class="ram-btn" data-file="linux/linux-2048mb.bin" onclick="selectRam(this)">
+            <span class="sz">2048 MB</span>
+            <span class="hint">heavy workloads</span>
+        </button>
+        <button class="ram-btn" data-file="linux/linux-3072mb.bin" onclick="selectRam(this)">
+            <span class="sz">3072 MB</span>
+            <span class="hint">max stable</span>
+        </button>
+        <button class="ram-btn" data-file="linux/linux-4096mb.bin" onclick="selectRam(this)">
+            <span class="sz">4096 MB</span>
+            <span class="hint">full RAM</span>
+        </button>
+    </div>
+
+    <!-- launch button: manual action only -->
+    <div id="launch-wrap">
+        <button id="launch" disabled onclick="launchLinux()">
+            ▶ Launch Linux
+        </button>
+    </div>
+
+    <hr class="sep">
+
+    <!-- console log -->
+    <div class="sec-label">log</div>
+    <div id="console">waiting for selection…</div>
+
+    <!-- footer -->
+    <div id="foot">
+        © 2026 <b>mansoor0x</b> · PS4 Linux via WebKit exploit polpNO ·
+        PS4-Linux-Loader bins by fail0verflow
+    </div>
+
+</div><!-- /wrap -->
+
+<script>
+(function () {
+    /* ── firmware detection ── */
+    var con = document.getElementById("console");
+
+    function print(msg, cls) {
+        var s = document.createElement("span");
+        if (cls) s.className = cls;
+        s.textContent = msg + "\n";
+        con.appendChild(s);
+        con.scrollTop = con.scrollHeight;
+    }
+
+    var m = /PlayStation\s+4[\/ ](\d+)\.(\d+)/.exec(navigator.userAgent);
+    if (m) {
+        var ms = parseInt(m[2], 16).toString(16);
+        if (ms.length < 2) ms = "0" + ms;
+        var key = m[1] + "." + ms;
+        document.getElementById("fw-val").textContent = key;
+        document.getElementById("i-fw").textContent   = key;
+        document.getElementById("i-fw").className     = "iv ok";
+        print("firmware detected: " + key, "ok");
+    } else {
+        document.getElementById("fw-val").textContent = "unknown (not PS4?)";
+        document.getElementById("i-fw").textContent   = "unknown";
+        document.getElementById("i-fw").className     = "iv bad";
+        print("warning: PS4 user-agent not detected", "warn");
+    }
+
+    print("select a RAM size to continue", "blu");
+})();
+
+/* ── RAM selection ── */
+var selectedFile = null;
+
+function selectRam(btn) {
+    document.querySelectorAll(".ram-btn").forEach(function(b) {
+        b.classList.remove("sel");
+    });
+    btn.classList.add("sel");
+    selectedFile = btn.getAttribute("data-file");
+
+    var sz = btn.querySelector(".sz").textContent;
+    document.getElementById("i-pay").textContent = "linux (" + sz + ")";
+    document.getElementById("i-st").textContent  = "ready";
+    document.getElementById("i-st").className    = "iv ok";
+    document.getElementById("launch").disabled   = false;
+
+    var con = document.getElementById("console");
+    con.innerHTML = "";
+    var s = document.createElement("span");
+    s.className = "ok";
+    s.textContent = "selected: " + selectedFile + "\n";
+    con.appendChild(s);
+    var s2 = document.createElement("span");
+    s2.className = "blu";
+    s2.textContent = "press Launch Linux to execute\n";
+    con.appendChild(s2);
+}
+
+/* ── launch ── */
+function launchLinux() {
+    if (!selectedFile) return;
+
+    document.getElementById("launch").disabled = true;
+    document.getElementById("i-st").textContent = "loading…";
+    document.getElementById("i-st").className   = "iv warn";
+
+    var con = document.getElementById("console");
+
+    function print(msg, cls) {
+        var s = document.createElement("span");
+        if (cls) s.className = cls;
+        s.textContent = msg + "\n";
+        con.appendChild(s);
+        con.scrollTop = con.scrollHeight;
+    }
+
+    print("fetching " + selectedFile + "…", "warn");
+
+    fetch(selectedFile)
+        .then(function(r) {
+            if (!r.ok) throw new Error("HTTP " + r.status);
+            return r.arrayBuffer();
+        })
+        .then(function(buf) {
+            print("payload: " + buf.byteLength + " bytes", "ok");
+            print("launching via exploit redirect…", "warn");
+
+            /* Store payload in sessionStorage and redirect to jb.html
+               jb.html picks it up via sessionStorage["linux_payload"] */
+            try {
+                sessionStorage.setItem("linux_payload", selectedFile);
+                sessionStorage.setItem("linux_size",    String(buf.byteLength));
+            } catch(e) {}
+
+            document.getElementById("i-st").textContent = "executing";
+            document.getElementById("i-st").className   = "iv ok";
+            print("redirecting to exploit chain…", "blu");
+
+            /* Redirect to jb.html with linux param */
+            location.href = "jb.html?linux=" + encodeURIComponent(selectedFile);
+        })
+        .catch(function(e) {
+            print("error: " + e.message, "bad");
+            document.getElementById("i-st").textContent = "failed";
+            document.getElementById("i-st").className   = "iv bad";
+            document.getElementById("launch").disabled   = false;
+        });
+}
+</script>
+</body>
+</html>
