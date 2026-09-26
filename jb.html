@@ -38,13 +38,46 @@ footer{text-align:center;color:#596575;margin-top:22px;font-size:11px}
 </main>
 <script>
 const run=document.getElementById("run"), state=document.getElementById("state"), out=document.getElementById("out");
+
+// Always show runtime/module errors instead of failing silently.
+window.addEventListener("error", (e) => {
+  state.textContent = "JavaScript error";
+  state.className = "fail";
+  out.textContent += "\nERROR: " + (e.message || "unknown error") +
+    (e.filename ? "\nFILE: " + e.filename : "") +
+    (e.lineno ? "\nLINE: " + e.lineno : "");
+  run.disabled = false;
+});
+window.addEventListener("unhandledrejection", (e) => {
+  const reason = e.reason && e.reason.message ? e.reason.message : String(e.reason);
+  state.textContent = "Unhandled promise error";
+  state.className = "fail";
+  out.textContent += "\nPROMISE ERROR: " + reason;
+  run.disabled = false;
+});
+
 run.addEventListener("click",()=>{
   run.disabled=true;
   state.textContent="Starting…";
-  out.textContent="Loading existing JB module…";
+  state.className="";
+  out.textContent="Loading JB module…";
+
+  const params = new URLSearchParams(location.search);
+  // Preserve Linux mode and enable visible diagnostics.
+  params.set("log", "1");
+  params.set("verbose", "1");
+  const linux = sessionStorage.getItem("linux_payload");
+  if (linux) params.set("linux", linux);
+
   const s=document.createElement("script");
   s.type="module";
-  s.src="./jb.js?v=10";
+  s.src="./jb.js?v=11&" + params.toString();
+  s.onerror=()=>{
+    state.textContent="Failed to load jb.js";
+    state.className="fail";
+    out.textContent += "\nERROR: Could not load ./jb.js or one of its imports.";
+    run.disabled=false;
+  };
   document.body.appendChild(s);
 });
 </script>

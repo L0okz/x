@@ -368,7 +368,9 @@ function launchLinux() {
             print("redirecting to exploit chain…", "blu");
 
             /* Redirect to jb.html with linux param */
-            location.href = "jb.html?linux=" + encodeURIComponent(selectedFile);
+            // Pass the selected Linux image to the JB runner.
+            // jb.js will use this exact file as the payload instead of goldhen.bin.
+            location.href = "jb.html?linux=" + encodeURIComponent(selectedFile) + "&log=1&verbose=1";
         })
         .catch(function(e) {
             print("error: " + e.message, "bad");

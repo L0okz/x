@@ -188,7 +188,22 @@ let allDone = false,
 
     const KPATCH_FILE =
       "patches/" + (off.kpatch || fwKey.replace(".", "") + ".bin");
-    const PAYLOAD_FILE = off.payload || "payload.bin";
+
+    // Linux loader mode: linux.html stores the selected image in
+    // sessionStorage and also passes it as ?linux=. Use that image as the
+    // payload instead of silently falling back to the normal JB payload.
+    let LINUX_PAYLOAD = params.get("linux");
+    if (!LINUX_PAYLOAD) {
+      try { LINUX_PAYLOAD = sessionStorage.getItem("linux_payload") || ""; }
+      catch (e) { LINUX_PAYLOAD = ""; }
+    }
+    if (LINUX_PAYLOAD && !/^linux\/[^\s?]+\.bin$/i.test(LINUX_PAYLOAD)) {
+      mark("LINUX-PAYLOAD-REJECTED", "invalid payload path=" + LINUX_PAYLOAD);
+      LINUX_PAYLOAD = "";
+    }
+    const PAYLOAD_FILE = LINUX_PAYLOAD || off.payload || "payload.bin";
+    const LINUX_MODE = !!LINUX_PAYLOAD;
+    mark("MODE", LINUX_MODE ? "LINUX payload=" + PAYLOAD_FILE : "JB payload=" + PAYLOAD_FILE);
     const needPatch = ["k_sysent_661", "k_jmp_rsi"].filter(
       (k) => off[k] === undefined,
     );
